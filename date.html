@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>日历</title>
+</head>
+
+<body>
+    <label for="">年月</label>
+    <input type="text">
+    <span>-分隔</span>
+    <table>
+        <thead>
+            <tr>
+                <th>星期日</th>
+                <th>星期一</th>
+                <th>星期二</th>
+                <th>星期三</th>
+                <th>星期四</th>
+                <th>星期五</th>
+                <th>星期六</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+    <script src="./calendar.js"></script>
+    <script>
+        const input = document.querySelector("input");
+        const calendar = new Calendar();
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        renderTbody(year, month);
+
+        input.onblur = function(e) {
+            let value = e.target.value;
+
+            let [year, month] = value.split("-");
+
+            if (+year && +month) {
+                renderTbody(+year, +month);
+            }
+        }
+
+        function renderTbody(year, month) {
+            const days = calendar.getDays(year, month);
+            const firstWeek = calendar.zellerWeek(year, month, 1);
+            const prevMonthDays = calendar.getDays(month > 0 ? year : year - 1, month > 0 ? month - 1 : 11);
+
+            const tbody = document.querySelector('tbody');
+
+            let fristDay = !firstWeek ? 1 : prevMonthDays - firstWeek + 1;
+
+            const calendarArr = []
+
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 7; j++) {
+                    if (!j) calendarArr[i] = [];
+                    let curDays = !i ? prevMonthDays : days;
+                    if (fristDay <= curDays) {
+                        calendarArr[i][j] = fristDay;
+                    } else {
+                        fristDay = 1;
+                        calendarArr[i][j] = fristDay;
+                    }
+                    fristDay++;
+                }
+            }
+            
+            let s = ""
+
+            calendarArr.forEach((week) => {
+                let tr = document.createElement("tr");
+                week.forEach((day) => {
+                    let td = document.createElement("td");
+                    td.innerHTML = day;
+                    tr.appendChild(td);
+                })
+                s += tr.outerHTML;
+            })
+
+            tbody.innerHTML = s;
+        }
+    </script>
+</body>
+
+</html>
